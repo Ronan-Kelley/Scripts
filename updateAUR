@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# @author Ronan Kelley
+# run this script in any folder containing AUR downloads
+# (personally I made the directory ~/AUR on my arch installs)
+# if you use multiple directories to store AUR folders, consider wrapping
+# this script in a for loop
+
+if [ -z $(command -v aur) ]; then
+	echo "this script requires AUR utils!"
+	exit
+fi
+
+curDir=$(pwd)
+echo "$curDir"
+curDirLen=${#curDir}
+curDirLen=$curDirLen+1
+for file in ${curDir}/*
+do
+	curFile=${file:curDirLen}
+	if ! [[ -z $curFile ]] && ! [[ $curFile =~ "." ]]
+	then
+		aur fetch $curFile
+		cd $curFile
+		makepkg -si
+		cd ..
+	fi
+done
