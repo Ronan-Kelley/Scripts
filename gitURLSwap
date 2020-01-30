@@ -1,0 +1,39 @@
+#!/bin/python3
+
+# https://github.com/WOBOT-141/Runcode2020.git
+# git@github.com:WOBOT-141/Runcode2020.git
+
+import subprocess
+import sys
+
+cur_url = None
+final_url = None
+
+# attempt to get current url
+try:
+    cur_url = subprocess.check_output(["git", "config", "--get", "remote.origin.url"]).decode('utf-8').strip()
+except Exception:
+    print("Please run this script from a valid git directory!")
+    sys.exit()
+
+# make sure that the url is from github.com, the site this script was designed for
+if cur_url.find("github.com") == -1:
+    print("this script does not work on repositories hosted through non-github services.")
+    sys.exit()
+
+# determine whether remote is currently https or ssh
+if cur_url.find("https") != -1:
+    final_url = cur_url.replace("https://github.com/", "git@github.com:")
+    print(cur_url + " -> " + final_url)
+
+elif cur_url.find("git@github.com:") != -1:
+    final_url = cur_url.replace("git@github.com:", "https://github.com/")
+    print(cur_url + " -> " + final_url)
+
+else:
+    print("could not parse url \"" + cur_url + "\"")
+
+try:
+    subprocess.call(["git", "remote", "set-url", "origin", final_url])
+except Exception:
+    print("could not set new URL")
