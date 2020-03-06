@@ -1,0 +1,16 @@
+#!/bin/python3
+
+###
+### this requires the pyautogui module. Install it through pip.
+###
+
+import pyautogui, sys, time
+
+print("starting in 5 seconds...")
+time.sleep(5)
+
+try:
+    while True:
+        pyautogui.click()
+except KeyboardInterrupt:
+    print("\n")
