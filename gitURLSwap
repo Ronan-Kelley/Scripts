@@ -21,9 +21,15 @@ if cur_url.find("github.com") == -1:
     print("this script does not work on repositories hosted through non-github services.")
     sys.exit()
 
+cur_url = cur_url.replace("://www.", "://")
+
 # determine whether remote is currently https or ssh
 if cur_url.find("https") != -1:
     final_url = cur_url.replace("https://github.com/", "git@github.com:")
+    print(cur_url + " -> " + final_url)
+
+elif curl_url.find("http") != -1:
+    final_url = cur_url.replace("http://github.com/", "git@github.com:")
     print(cur_url + " -> " + final_url)
 
 elif cur_url.find("git@github.com:") != -1:
