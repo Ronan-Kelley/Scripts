@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# flags
+colors=1
+found_sides=0
+# args for math
+sides=6;
+perms=1;
+
+# handle args
+for arg in $@
+do
+	# check for color disable flag
+	[ "$arg" == "-n" ] || [ "$arg" == "--nocolor" ] && colors=0;
+	# check for first numerical argument denoting side number
+	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 0 ] && sides=$arg && found_sides=1;
+	# check for final numerical argument denoting permutations
+	[[ "$arg" =~ ^[0-9]+$ ]] && perms=$arg;
+done
+
+# if colors are disabled, output in default terminal font color. Otherwise, output in light blue.
+[ $colors -eq 1 ] && tput setaf 80; for (( i=0; i < $perms; i++ )); do echo $(( $RANDOM % ( $sides + 1 ) )); done; [ $colors -eq 1 ] && tput setaf 80
+
