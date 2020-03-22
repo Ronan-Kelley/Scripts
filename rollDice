@@ -10,6 +10,8 @@ perms=1;
 # handle args
 for arg in $@
 do
+	# check for help flag
+	[ "$arg" == "-h" ] || [ "$arg" == "--help" ] && echo "usage: rollDice <sides> <permutations> (-n|--nocolor) (-h|--help)" && exit 0;
 	# check for color disable flag
 	[ "$arg" == "-n" ] || [ "$arg" == "--nocolor" ] && colors=0;
 	# check for first numerical argument denoting side number
