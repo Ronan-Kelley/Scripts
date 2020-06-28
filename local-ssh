@@ -1,0 +1,21 @@
+# get current machine's local ip
+local_ip="$(ip addr | grep 192.168* | xargs | cut -c6- | cut -f 1 -d ' ')"
+
+# determine which device the user wants to connect to
+user_selection="$(nmap -sn $local_ip | grep -v "Starting\|Host\|done" | cut -c22- | dmenu -l 15)"
+
+# parse user selection
+ip_addr="$(echo $user_selection | tr -cd '[[:digit:].]')"
+
+# determine username to connect with
+echo 'username (enter for current user):'
+read name
+
+# default username to current user if there is no input
+[ -z $name ] && name="$(whoami)"
+
+# print command being run
+echo "ssh ${name}@${ip_addr}"
+
+# start ssh session
+ssh ${name}@${ip_addr}

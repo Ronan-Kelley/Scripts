@@ -1,8 +1,5 @@
 #!/bin/python3
 
-# https://github.com/WOBOT-141/Runcode2020.git
-# git@github.com:WOBOT-141/Runcode2020.git
-
 import subprocess
 import sys
 
