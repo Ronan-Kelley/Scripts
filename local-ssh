@@ -1,3 +1,26 @@
+### arg parsing ###
+
+user=""
+port=""
+
+for arg in $@; do
+	arg="$(echo $arg | tr -d ' ')"
+
+	# set user programatically, instead of during runtime
+	if [[ $arg =~ .*-u=.* ]]; then
+		user="${arg:3}"
+		echo "user set to \"$user\""
+	fi
+
+	# set port programatically, as there is no option to do so during runtime
+	if [[ $arg =~ .*-p=.* ]]; then
+		port="$(echo $arg | tr -cd '[[:digit:]]')"
+		echo "port set to \"$port\""
+	fi
+done
+
+### end arg parsing ###
+
 # get current machine's local ip
 local_ip="$(ip addr | grep 192.168* | xargs | cut -c6- | cut -f 1 -d ' ')"
 
@@ -8,14 +31,16 @@ user_selection="$(nmap -sn $local_ip | grep -v "Starting\|Host\|done" | cut -c22
 ip_addr="$(echo $user_selection | tr -cd '[[:digit:].]')"
 
 # determine username to connect with
-echo 'username (enter for current user):'
-read name
+[ -z $user ] && echo 'username (enter for current user):' && read name
+[ ! -z $user ] && name="$user"
 
 # default username to current user if there is no input
 [ -z $name ] && name="$(whoami)"
 
 # print command being run
-echo "ssh ${name}@${ip_addr}"
+[ -z $port ] && echo "ssh ${name}@${ip_addr}" || echo "ssh -p ${port} ${name}@${ip_addr}"
 
 # start ssh session
-ssh ${name}@${ip_addr}
+[ -z $port ] && ssh ${name}@${ip_addr} || ssh -p ${port} ${name}@${ip_addr}
+
+# vim: syntax=sh
