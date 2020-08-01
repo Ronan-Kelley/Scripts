@@ -4,6 +4,7 @@
 colors=1
 found_sides=0
 total_only=0
+dnd_syntax=0
 # args for math
 sides=6;
 perms=1;
@@ -28,9 +29,11 @@ do
 	# check for total only flag
 	[ "$arg" == "-to" ] || [ "$arg" == "--total-only" ] && total_only=1 && continue;
 	# check for first numerical argument denoting side number
-	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 0 ] && sides=$arg && found_sides=1 && continue;
+	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 0 ] && [ $dnd_syntax -eq 0 ] && sides=$arg && found_sides=1 && continue;
 	# check for final numerical argument denoting permutations
-	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 1 ] && perms=$arg && continue;
+	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 1 ] && [ $dnd_syntax -eq 0 ] && perms=$arg && continue;
+	# check for and parse dnd-style roll syntax
+	[[ "$arg" =~ ^[0-9]+d([0-9]+) ]] && dnd_syntax=1 && sides="$( cut -d "d" -f2 <<< "$arg" )" && perms="$( cut -d "d" -f1 <<< "$arg" )" && continue;
 done
 
 # if colors are disabled, output in default terminal font color. Otherwise, output in light blue.
