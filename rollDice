@@ -24,13 +24,13 @@ do
 	# check for help flag
 	[ "$arg" == "-h" ] || [ "$arg" == "--help" ] && help && exit 0;
 	# check for color disable flag
-	[ "$arg" == "-n" ] || [ "$arg" == "--nocolor" ] && colors=0;
+	[ "$arg" == "-n" ] || [ "$arg" == "--nocolor" ] && colors=0 && continue;
 	# check for total only flag
-	[ "$arg" == "-to" ] || [ "$arg" == "--total-only" ] && total_only=1;
+	[ "$arg" == "-to" ] || [ "$arg" == "--total-only" ] && total_only=1 && continue;
 	# check for first numerical argument denoting side number
-	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 0 ] && sides=$arg && found_sides=1;
+	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 0 ] && sides=$arg && found_sides=1 && continue;
 	# check for final numerical argument denoting permutations
-	[[ "$arg" =~ ^[0-9]+$ ]] && perms=$arg;
+	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 1 ] && perms=$arg && continue;
 done
 
 # if colors are disabled, output in default terminal font color. Otherwise, output in light blue.
@@ -38,7 +38,7 @@ done
 
 for (( i=0; i < $perms; i++ )); do
 	# append the output of every roll to the 'rolls' array
-	rolls+=($(( $RANDOM % ( $sides + 1 ) )))
+	rolls+=($(( ( $RANDOM % $sides ) + 1 )))
 	# ease-of-access variable containing the last value added to the 'rolls' array
 	lastRoll=${rolls[$(( ${#rolls[*]} - 1 ))]}
 	# maintain a running total of the values of each roll
