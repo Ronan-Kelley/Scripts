@@ -51,3 +51,5 @@ for (( i=0; i < $perms; i++ )); do
 done
 
 echo "total value of all rolls: $totalVal"
+
+# vim: syntax=sh

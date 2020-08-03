@@ -27,7 +27,7 @@ text_buffer="${text_buffer//>/>\\n}"
 ###
 
 # put newlines after every open bracket
-text_buffer="${text_buffer//{/\{\\n}}"
+text_buffer="${text_buffer//\{/\{\\n}"
 
 # put newlines after every semicolon
 text_buffer="${text_buffer//\;/\;\\n}"

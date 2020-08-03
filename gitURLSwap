@@ -40,3 +40,5 @@ try:
     subprocess.call(["git", "remote", "set-url", "origin", final_url])
 except Exception:
     print("could not set new URL")
+
+# vim: syntax=python

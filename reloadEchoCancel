@@ -25,3 +25,5 @@ if pactl load-module module-echo-cancel use_master_format=1 aec_method=webrtc ae
 	pacmd set-default-source $newSourceName
 	pacmd set-default-sink $newSinkName
 fi
+
+# vim: syntax=sh
