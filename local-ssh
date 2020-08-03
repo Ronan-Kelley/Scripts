@@ -9,6 +9,7 @@ for arg in $@; do
 
 	# set user programatically, instead of during runtime
 	if [[ $arg =~ .*-u=.* ]]; then
+		autoset_user=0
 		user="${arg:3}"
 		echo "user set to \"$user\""
 	fi
@@ -27,6 +28,11 @@ for arg in $@; do
 		[ -z "$ssh_args" ] && ssh_args="$arg"
 	fi
 
+	# enable auto-setting of user, overriden by -u
+	if [[ $arg == '-au' ]] || [[ $arg == '--autouser' ]]; then
+		[ -z "$user" ] && autoset_user=1
+	fi
+
 done
 
 ### end arg parsing ###
@@ -40,15 +46,18 @@ user_selection="$(nmap -sn $local_ip | grep -v "Starting\|Host\|done" | cut -c22
 # stop if no host is selected (I.E., user hits escape in dmenu prompt)
 [ -z "$user_selection" ] && echo "no host selected. Stop." && exit 1
 
+echo "user selection: $user_selection"
+
 # parse user selection
-ip_addr="$(echo $user_selection | tr -cd '[[:digit:].]')"
+ip_addr="$( [ -z "$(echo "$user_selection" | grep '(\|)')" ] && echo $user_selection | tr -cd '[[:digit:].]' || echo "$user_selection" | cut -d '(' -f2 | sed 's/)//' )"
 
 # determine username to connect with
-[ -z $user ] && echo 'username (enter for current user):' && read name
-[ ! -z $user ] && name="$user"
+[ "$autoset_user" == "1" ] && name="$( [ ! -z "$( echo "$user_selection" | grep '(' )" ] && echo "$user_selection" | cut -d '(' -f1 | xargs)"
+[ -z $user ] && ([ "$autoset_user" == "0" ] || [ -z "$autoset_user" ]) && echo 'username (enter for current user):' && read name
+[ ! -z $user ] && ([ "$autoset_user" == "0" ] || [ -z "$autoset_user" ]) && name="$user"
 
 # default username to current user if there is no input
-[ -z $name ] && name="$(whoami)"
+[ -z "$name" ] && name="$(whoami)"
 
 # print command being run
 echo "ssh ${name}@${ip_addr} ${ssh_args}"
