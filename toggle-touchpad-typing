@@ -1,0 +1,36 @@
+#!/bin/python3
+import subprocess
+import sys
+
+deviceName="SynPS/2 Synaptics TouchPad"
+deviceId=-1
+propId=-1
+
+deviceList = subprocess.check_output("xinput").decode('utf-8').split('\n')
+
+# find device id
+for line in deviceList:
+    if line.find(deviceName) != -1:
+        deviceId=line[line.find("id=")+3:line.find("id=")+6].strip()
+
+propsList = subprocess.check_output(["xinput", "list-props", deviceId]).decode('utf-8').split('\n')
+
+# find prop id
+for line in propsList:
+    if line.find("Disable While Typing Enabled") != -1:
+        propId=line[line.find("(")+1:line.find(")")]
+        break
+
+if (len(sys.argv) > 1):
+    if (sys.argv[1] == "on"):
+        subprocess.call(["xinput", "set-prop", deviceId, propId, "0"])
+        print("touchpad typing enabled")
+    elif (sys.argv[1] == "off"):
+        subprocess.call(["xinput", "set-prop", deviceId, propId, "1"])
+        print("touchpad typing disabled")
+    else:
+        print("valid options are [on, off]")
+else:
+    print("valid options are [on, off]")
+
+# vim: syntax=python
