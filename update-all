@@ -1,0 +1,20 @@
+# note that the purpose of this script is to run through all package and toolchain updating software on the host's computer.
+# it is NOT to fully automate these programs - as a system administrator or other priviledged user, it is your
+# responsibility to view and manually confirm or deny updates of any kind that you apply to your system.
+
+# get priviledges
+sudo -v
+
+# update this repository's local state if possible and located at ~/Scripts or ~/scripts
+[ -d ~/scripts ] && command -v git 2&> /dev/null && cd ~/scripts && git pull
+[ -d ~/Scripts ] && command -v git 2&> /dev/null && cd ~/Scripts && git pull
+
+# run through updates for pacman
+command -v pacman 2&> /dev/null && sudo pacman -Syu
+command -v apt 2&> /dev/null && sudo apt update && sudo apt upgrade
+
+# run through updates for rust
+command -v rustup 2&> /dev/null && rustup update
+
+# run through updates for AUR programs if the directory ~/AUR exists
+command -v makepkg 2&> /dev/null && [ -d ~/AUR ] && cd ~/AUR && update-aur
