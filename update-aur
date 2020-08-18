@@ -6,11 +6,6 @@
 # if you use multiple directories to store AUR folders, consider wrapping
 # this script in a for loop
 
-if [ -z $(command -v aur) ]; then
-	echo "this script requires AUR utils!"
-	exit
-fi
-
 # get information necessary to cut directory string to size
 curDir=$(pwd)
 curDirLen=${#curDir}
