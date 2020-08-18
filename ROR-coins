@@ -12,6 +12,9 @@
 # ensure that we have a file to work with
 ([ -z "$1" ] || [ ! -f "$1" ]) && echo "please supply a valid path to the config file, usually found at \"~/.steam/steam/userdata/[numbers]/632360/remote/UserProfiles/[lots of numbers and letters with some dashes].xml\""
 
+# backup the file, just in case. random numbers are for added entropy to try and avoid replacing existing backups when this script is ran.
+cp "$1" "${1}-$(( $RANDOM % 10 + 1 ))$(( $RANDOM % 10 + 1 ))$(( $RANDOM % 10 + 1)).bak"
+
 # set current coins equal to whatever value is between the 'coins' tags in the xml body (weird syntax is to prevent unwanted output to stdout)
 read current_coins < <(cat "$1" | sed -n 's:.*<coins>\(.*\)</coins>.*:\1:p')
 
