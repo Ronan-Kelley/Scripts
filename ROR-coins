@@ -9,21 +9,34 @@
 # 		  characters will be automatically stripped from this argument.
 #
 
-# ensure that we have a file to work with
-([ -z "$1" ] || [ ! -f "$1" ]) && echo "please supply a valid path to the config file, usually found at \"~/.steam/steam/userdata/[numbers]/632360/remote/UserProfiles/[lots of numbers and letters with some dashes].xml\""
+# handle args
+for arg in $*; do
 
-# backup the file, just in case. random numbers are for added entropy to try and avoid replacing existing backups when this script is ran.
-cp "$1" "${1}-$(( $RANDOM % 10 + 1 ))$(( $RANDOM % 10 + 1 ))$(( $RANDOM % 10 + 1)).bak"
+	# if an arg is only a number, it is likely the new value for coins
+	if [[ $arg =~ ^[[:digit:]]+$ ]]; then
+		new_coins="$arg"
+	# if an arg is not only a number and there is not a valid setting for file_location, set the file location to the new arg
+	elif [ -z "$file_location" ]; then
+		[ -f "$arg" ] && file_location="$arg"
+	fi
+
+done
+
+# ensure that a value for $file_location exists
+[ -z "$file_location" ] && file_location="$(find ~/.local/share/Steam/userdata/ -type f | grep -i '632360.*userprofiles\|userprofiles.*632360' | sed -n '/.xml$/p')"
+
+# ensure that we have a file to work with
+[ ! -f "$file_location" ] && echo "please supply a valid path to the config file, normally found at \"~/.steam/steam/userdata/[numbers]/632360/remote/UserProfiles/[lots of numbers and letters with some dashes].xml\"" && exit 1
 
 # set current coins equal to whatever value is between the 'coins' tags in the xml body (weird syntax is to prevent unwanted output to stdout)
-read current_coins < <(cat "$1" | sed -n 's:.*<coins>\(.*\)</coins>.*:\1:p')
+read current_coins < <(cat "$file_location" | sed -n 's:.*<coins>\(.*\)</coins>.*:\1:p')
 
 # if there is no new value to set, print current value
-[ -z "$2" ] && echo "you have $current_coins lunar coins." && exit 0
+[ -z "$new_coins" ] && echo "you have $current_coins lunar coins." && exit 0
 
-# take only numbers for new value so as to not corrupt data
-new_value="$(echo $2 | sed 's/[^0-9]/ /g;s/ //g;s/\n//g')"
+# backup the file, just in case. random numbers are for added entropy to try and avoid replacing existing backups when this script is ran.
+cp "$file_location" "${file_location}-$(( $RANDOM % 10 + 1 ))$(( $RANDOM % 10 + 1 ))$(( $RANDOM % 10 + 1)).bak"
 
-(cat $1 | sed 's:\(.*<coins>\).*\(</coins>.*\):\1'"$new_value"'\2:p' | tee $1) 1>/dev/null
+(cat $file_location | sed 's:\(.*<coins>\).*\(</coins>.*\):\1'"$new_coins"'\2:p' | tee $file_location) 1>/dev/null
 
-echo "$current_coins -> $new_value"
+echo "$current_coins -> $new_coins"
