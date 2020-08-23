@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# default path is /latest
-curl_path="latest"
+# default path is /toplist
+curl_path="toplist"
 autoset=""
 autodelete=""
 autoresize=""
@@ -30,6 +30,11 @@ for arg in $*; do
 			;;
 		# only functions with --autoset, pass this flag to automatically delete old wallhaven downloads in home before moving and setting the new one
 		"-d"|"--autodelete")
+			autodelete="true"
+			;;
+		"-fa"|"--fully-automatic")
+			autoresize="true"
+			autoset="true"
 			autodelete="true"
 			;;
 	esac
@@ -66,6 +71,8 @@ curl "https://w.wallhaven.cc/full/${random_choice:0:2}/wallhaven-${random_choice
 [ ! -z "$autoresize" ] && convert /tmp/wallhaven -resize "$(xrandr | grep 'primary' | cut -d ' ' -f4 | cut -d '+' -f1)" /tmp/wallhaven
 
 # autoset if proper flag passed, otherwise open with feh
-[ -z "$autoset" ] && feh /tmp/wallhaven || mv /tmp/wallhaven ~/wallhaven-${random_choice} && echo -e "#!/bin/sh\nfeh --no-fehbg --bg-scale '$HOME/wallhaven-${random_choice}'" > ~/.fehbg && bash ~/.fehbg
+[ -z "$autoset" ] && feh /tmp/wallhaven && echo "set as wallpaper?" && read yn && [[ $yn =~ y|yes|YES|Y ]] && mv /tmp/wallhaven ~/wallhaven-${random_choice} && echo -e "#!/bin/sh\nfeh --no-fehbg --bg-scale '$HOME/wallhaven-${random_choice}'" > ~/.fehbg && bash ~/.fehbg
+
+[ ! -z "$autoset" ] && mv /tmp/wallhaven ~/wallhaven-${random_choice} && echo -e "#!/bin/sh\nfeh --no-fehbg --bg-scale '$HOME/wallhaven-${random_choice}'" > ~/.fehbg && bash ~/.fehbg
 
 # vim: syntax=sh
