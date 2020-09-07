@@ -1,0 +1,26 @@
+#/bin/sh
+
+IFS=$'\n'
+for monitor in $( xrandr | grep '\bconnected' ); do
+	# get monitor name from xrandr
+	monitor_name="$(echo $monitor | grep -o -e 'DVI-D-[0-9]' -e 'HDMI-[0-9]' -e 'DP-[0-9]')"
+	# determine whether or not the monitor is considered the primary monitor
+	[ ! -z "$(echo $monitor | grep primary)" ] && monitor_primary="true" || monitor_primary="false"
+	# get monitor resolution
+	monitor_resolution="$(echo $monitor | sed 's/.*\( [0-9]*x[0-9]*+\).*/\1/;s/ //;s/+//')"
+	# get monitor refresh rate
+	monitor_refresh_rate="$(xrandr | head -n $(( $(xrandr | grep -n -e '*' -e '\bconnected' | grep $monitor_name | cut -d ':' -f1) + 1 )) | tail -n 1 | sed 's/ \+/\n/g' | grep '\*' | sed 's/\*//;s/+//')"
+
+	# print it in a human-legible fashion
+	blue='\033[1;34m'
+	green='\033[1;32m'
+	red='\033[1;31m'
+	[ "$monitor_primary" == "true" ] || primary_bool_color="$red"
+
+	echo -e "${blue}$monitor_name:"
+	echo -e "\t${blue}primary: ${green}${primary_bool_color}$monitor_primary"
+	echo -e "\t${blue}resolution: ${green}$monitor_resolution"
+	echo -e "\t${blue}refresh rate: ${green}$monitor_refresh_rate"
+done
+
+# vim: syntax=sh
