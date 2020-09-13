@@ -1,0 +1,28 @@
+#!/bin/bash
+
+#
+# I got sick of writing out the command to run the junit test suite by hand for my computer science class,
+# so I wrote this little script to do it for me.
+# usage: cd <java project root> && gen-junit-command '[src or bin]/test/class/path' OR cd <java project root> && gen-junit-command 'test/class/path'
+# use -c to copy output to clipboard (requires xclip).
+#
+
+for arg in $*; do
+	case $arg in 
+		"-c")
+			clipboard_copy="true"
+			;;
+		*)
+			test_class_path="$arg"
+			;;
+	esac
+done
+
+test_class_path="$(echo "$test_class_path" | sed 's/^src//;s/^bin//;s:^/bin::;s:^/src::;s:^/*::;s:/:.:;s/.java\|.class//g')"
+
+junit_console_loc='$HOME/Software/junit-console.jar'
+java_libs='/usr/share/java/*.jar'
+echo 'java -cp ".:'"$junit_console_loc"':'"$java_libs"'" org.junit.runner.JUnitCore '"$test_class_path"
+[ ! -z "$clipboard_copy" ] && echo 'java -cp ".:'"$junit_console_loc"':'"$java_libs"'" org.junit.runner.JUnitCore '"$test_class_path" | xclip -i
+
+# vim: syntax=sh
