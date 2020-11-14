@@ -12,6 +12,6 @@ latest_version="$(curl -s "$repo_url" | grep browser_ | cut -d\" -f4 | head -n 1
 
 [ "$2" == "--dmenu" ] && wget "$(curl -s "$repo_url" | grep browser_ | cut -d\" -f4 | grep $latest_version | dmenu -l 5)" && exit 0
 
-wget "$(curl -s "$repo_url" | grep browser_ | cut -d\" -f4 | grep "$latet_version" | head -n 1)"
+wget "$(curl -s "$repo_url" | grep browser_ | cut -d\" -f4 | grep "$latest_version" | head -n 1)"
 
 # vim: syntax=sh

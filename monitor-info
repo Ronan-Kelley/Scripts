@@ -15,12 +15,13 @@ for monitor in $( xrandr | grep '\bconnected' ); do
 	blue='\033[1;34m'
 	green='\033[1;32m'
 	red='\033[1;31m'
+	reset='\033[0;0m'
 	[ "$monitor_primary" == "true" ] || primary_bool_color="$red"
 
 	echo -e "${blue}$monitor_name:"
 	echo -e "\t${blue}primary: ${green}${primary_bool_color}$monitor_primary"
 	echo -e "\t${blue}resolution: ${green}$monitor_resolution"
-	echo -e "\t${blue}refresh rate: ${green}$monitor_refresh_rate"
+	echo -e "\t${blue}refresh rate: ${green}$monitor_refresh_rate${reset}"
 done
 
 # vim: syntax=sh

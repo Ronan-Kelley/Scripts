@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# simple QoL script for grabbing window classes with Xprop for i3 configs
+xprop | grep -i class | sed -r 's/^(.*?)=//;s/"//g;s/[[:space:]]//g;s/,/ /'
+
+# vim: syntax=sh
