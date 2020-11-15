@@ -1,0 +1,12 @@
+#!/bin/sh
+
+for i in $(seq 1 16); do
+	output_str=""
+	for n in $(seq $(( 16 * ($i - 1) )) $(( 16 * $i )) ); do
+		n_pretty_format="$n"
+		[ $(( $n < 10 )) -eq 1 ] && n_pretty_format="00$n"
+		[ $(( $n >= 10 )) -eq 1 ] && [ $(( $n < 100 )) -eq 1 ] && n_pretty_format="0$n"
+		output_str="${output_str}""$(echo $(tput setaf $n)$n_pretty_format )"' '
+	done
+	echo $output_str
+done
