@@ -1,9 +1,12 @@
 #/bin/sh
 
+[ -z "$(xrandr | grep '\bconnected')" ] && echo "no monitors connected, exiting" && exit 0
+
 IFS=$'\n'
 for monitor in $( xrandr | grep '\bconnected' ); do
+
 	# get monitor name from xrandr
-	monitor_name="$(echo $monitor | grep -o -e 'DVI-D-[0-9]' -e 'HDMI-[0-9]' -e 'DP-[0-9]')"
+	monitor_name="$(echo $monitor | sed -r 's/\s*([A-Za-z]+[0-9]+).*/\1/')"
 	# determine whether or not the monitor is considered the primary monitor
 	[ ! -z "$(echo $monitor | grep primary)" ] && monitor_primary="true" || monitor_primary="false"
 	# get monitor resolution
