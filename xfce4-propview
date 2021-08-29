@@ -1,0 +1,14 @@
+#!/bin/bash
+
+dashes_str=""
+for i in $(seq 1 $(tput cols)); do
+	dashes_str="${dashes_str}-"
+done
+
+echo "${dashes_str}"
+IFS=$'\n'
+for prop in $(xfconf-query --channel xfce4-desktop --list); do
+	echo -e "$prop\n$(xfconf-query --channel xfce4-desktop --property $prop)\n${dashes_str}"
+done
+
+# vim: syntax=sh
