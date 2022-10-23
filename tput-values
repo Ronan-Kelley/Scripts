@@ -1,7 +1,14 @@
 #!/bin/sh
 
+#
+# attempt to display every color available through
+# `tput setaf` in the console.
+#
+
+# the output is seperated into 16 lines for legibility
 for i in $(seq 1 16); do
 	output_str=""
+    # iterate through the next 16 values
 	for n in $(seq $(( 16 * ($i - 1) )) $(( 16 * $i )) ); do
 		n_pretty_format="$n"
 		[ $(( $n < 10 )) -eq 1 ] && n_pretty_format="00$n"
