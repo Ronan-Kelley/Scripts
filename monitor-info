@@ -1,12 +1,29 @@
-#/bin/sh
+#!/bin/env bash
 
-[ -z "$(xrandr | grep '\bconnected')" ] && echo "no monitors connected, exiting" && exit 0
+# provide help dialogue when passed "-h" or "--help"
+if [ "$1" == "-h" ] || [ "$1" == "--help" ]; then
+    echo -e "\033[1;34mmonitor-info\033[0;0m is a shell script that outputs the name,\nresolution, and refresh rate of all connected monitors.\nTakes no arguments save for -h (or --help),\nwhich outputs this message."
+    exit 0
+fi
 
+# ensure xrandr is available
+if ! $(command -v xrandr > /dev/null); then
+    echo "this script requires the utility xrandr to function."
+    exit 1
+fi
+
+#
+# iterate through connected displays as reported by xrandr,
+# reporting information on their refresh rate, resolution,
+# and status as "primary".
+#
+
+# set field seperator to newline
 IFS=$'\n'
+# iterate through every connected monitor
 for monitor in $( xrandr | grep '\bconnected' ); do
-
 	# get monitor name from xrandr
-	monitor_name="$(echo $monitor | sed -r 's/\s*([A-Za-z]+[0-9]+).*/\1/')"
+	monitor_name="$(echo $monitor | sed -r 's/\s*([^ ]+).*/\1/')"
 	# determine whether or not the monitor is considered the primary monitor
 	[ ! -z "$(echo $monitor | grep primary)" ] && monitor_primary="true" || monitor_primary="false"
 	# get monitor resolution
@@ -14,17 +31,16 @@ for monitor in $( xrandr | grep '\bconnected' ); do
 	# get monitor refresh rate
 	monitor_refresh_rate="$(xrandr | head -n $(( $(xrandr | grep -n -e '*' -e '\bconnected' | grep $monitor_name | cut -d ':' -f1) + 1 )) | tail -n 1 | sed 's/ \+/\n/g' | grep '\*' | sed 's/\*//;s/+//')"
 
-	# print it in a human-legible fashion
+    # set up colors for output
 	blue='\033[1;34m'
 	green='\033[1;32m'
 	red='\033[1;31m'
 	reset='\033[0;0m'
 	[ "$monitor_primary" == "true" ] || primary_bool_color="$red"
 
+	# print it in a human-legible fashion
 	echo -e "${blue}$monitor_name:"
 	echo -e "\t${blue}primary: ${green}${primary_bool_color}$monitor_primary"
 	echo -e "\t${blue}resolution: ${green}$monitor_resolution"
 	echo -e "\t${blue}refresh rate: ${green}$monitor_refresh_rate${reset}"
 done
-
-# vim: syntax=sh
