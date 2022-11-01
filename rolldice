@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # flags
-colors=1
+colors=0
 found_sides=0
 total_only=0
 dnd_syntax=0
@@ -26,8 +26,10 @@ do
 	[ "$arg" == "-h" ] || [ "$arg" == "--help" ] && help && exit 0;
 	# check for color disable flag
 	[ "$arg" == "-n" ] || [ "$arg" == "--nocolor" ] && colors=0 && continue;
+    # check for color enable flag
+    [ "$arg" == "-c" ] || [ "$arg" == "--color" ] && colors=1 && continue;
 	# check for total only flag
-	[ "$arg" == "-to" ] || [ "$arg" == "--total-only" ] && total_only=1 && continue;
+	[ "$arg" == "-t" ] || [ "$arg" == "--total-only" ] && total_only=1 && continue;
 	# check for first numerical argument denoting side number
 	[[ "$arg" =~ ^[0-9]+$ ]] && [ $found_sides -eq 0 ] && [ $dnd_syntax -eq 0 ] && sides=$arg && found_sides=1 && continue;
 	# check for final numerical argument denoting permutations
@@ -47,9 +49,9 @@ for (( i=0; i < $perms; i++ )); do
 	# maintain a running total of the values of each roll
 	totalVal=$(( $totalVal + $lastRoll ))
 	# print the value of every roll
-	[ $total_only -eq 0 ] && echo "roll ${#rolls[*]}: $lastRoll"
+    [ $total_only -eq 0 ] && [ $perms -gt 1 ] && echo "roll ${#rolls[*]}: $lastRoll"
 done
 
-echo "total value of all rolls: $totalVal"
+[ $perms -gt 1 ] && echo "total: $totalVal" || echo "$totalVal"
 
 # vim: syntax=sh
