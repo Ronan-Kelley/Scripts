@@ -15,7 +15,7 @@ totalVal=0
 
 # help as a function, for legibility reasons
 function help() {
-	echo "usage: rollDice <sides> <permutations> (-n|--nocolor) (-h|--help) (-to|--total-only)"
+	echo "usage: rollDice <sides> <permutations> [-n|--nocolor] [-c|--color] [-h|--help] [-t|--total-only]"
 	return 0
 }
 
