@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# rotate monitor around incrementally with hyprland
+# values are taken from official documentation
+# https://wiki.hyprland.org/Configuring/Monitors/
+
+# only intended to work with single-monitor setups
+
+# comment out either of these lines to disable transforming
+# their respective devices. Update them to match your own if
+# you want them to work.
+touchdevice="elan901c:00-04f3:2a41"
+stylusdevice="${touchdevice}-stylus"
+
+# as of writing this, states 0-3 are:
+# 0: 0 degree offset
+# 1: 90 degree offset
+# 2: 180 degree offset
+# 3: 270 degree offset
+# and these states are shared between the input and monitor devices
+minstate=0
+maxstate=1
+
+# get current state
+curstate="$(hyprctl monitors | grep transform | sed -r 's/.*([0-9]+).*/\1/' | tr -d '\n')"
+
+# increment state
+if [ ! -z "$curstate" ]; then
+    curstate=$(( $curstate + 1 ))
+    if [ $curstate -gt $maxstate ]; then
+        curstate=$minstate
+    fi
+else
+    curstate=$minstate
+fi
+
+hyprctl keyword monitor ,transform,$curstate
+[ ! -z "$touchdevice" ] && hyprctl keyword device:${touchdevice}:transform $curstate
+[ ! -z "$stylusdevice" ] && hyprctl keyword device:${stylusdevice}:transform $curstate
