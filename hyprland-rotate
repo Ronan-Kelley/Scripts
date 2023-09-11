@@ -37,3 +37,4 @@ fi
 hyprctl keyword monitor ,transform,$curstate
 [ ! -z "$touchdevice" ] && hyprctl keyword device:${touchdevice}:transform $curstate
 [ ! -z "$stylusdevice" ] && hyprctl keyword device:${stylusdevice}:transform $curstate
+pgrep eww && eww reload
